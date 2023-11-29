@@ -1,0 +1,51 @@
+from collections import deque
+
+def water_jug_problem(capacity_jug1, capacity_jug2, target_volume):
+    visited_states = set()
+    initial_state = (0, 0)
+
+    queue = deque([(initial_state, [])])
+
+    while queue:
+        current_state, path = queue.popleft()
+
+        if current_state in visited_states:
+            continue
+
+        visited_states.add(current_state)
+
+        jug1, jug2 = current_state
+
+        if jug1 == target_volume or jug2 == target_volume:
+            print("Solution found:")
+            print(path)
+            return
+
+        # Fill jug1
+        if jug1 < capacity_jug1:
+            queue.append(((capacity_jug1, jug2), path + ["Fill jug1"]))
+
+        # Fill jug2
+        if jug2 < capacity_jug2:
+            queue.append(((jug1, capacity_jug2), path + ["Fill jug2"]))
+
+        # Empty jug1
+        if jug1 > 0:
+            queue.append(((0, jug2), path + ["Empty jug1"]))
+
+        # Empty jug2
+        if jug2 > 0:
+            queue.append(((jug1, 0), path + ["Empty jug2"]))
+
+        # Pour water from jug1 to jug2
+        pour_amount = min(jug1, capacity_jug2 - jug2)
+        queue.append(((jug1 - pour_amount, jug2 + pour_amount), path + ["Pour jug1 to jug2"]))
+
+        # Pour water from jug2 to jug1
+        pour_amount = min(jug2, capacity_jug1 - jug1)
+        queue.append(((jug1 + pour_amount, jug2 - pour_amount), path + ["Pour jug2 to jug1"]))
+
+    print("Solution not found.")
+
+# Example usage:
+water_jug_problem(4, 3, 2)
